@@ -1,0 +1,55 @@
+# Assignment_1
+
+# Logistic regression model on IRIS dataset
+
+## Name : M. Pavan Ganesh
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = pd.read_csv("Iris.csv")
+
+df.head(5)
+
+df = df.drop(columns = ['Id'])
+df.head(5)
+
+#getting info
+df.info()
+
+#counting the species
+df['Species'].value_counts()
+
+#finding null values
+df.isnull().sum()
+
+#visualize the data
+df['SepalLengthCm'].hist()
+df['SepalWidthCm'].hist()
+
+df['PetalLengthCm'].hist()
+df['PetalWidthCm'].hist()
+
+df.corr()
+
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+df['Species'] = le.fit_transform(df['Species'])
+df.head(100)
+
+from sklearn.model_selection import train_test_split
+
+X = df.drop(columns = ['Species'])
+Y = df['Species']
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.3)
+
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression()
+
+model.fit(X_train, Y_train)
+
+print("Accuracy: ", model.score(X_test, Y_test) * 100)
+
+#accuracy rate is 97% increases with number of data points
