@@ -1,0 +1,345 @@
+# Project_1
+
+## Name: M.Pavan Ganesh
+
+### Temperature prediction problem using Linear_regression (gradient descent method)
+
+#imports
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+ !pip install xlrd
+
+pd.__version__
+
+data= pd.read_csv('dataset.csv')
+
+data.head()
+
+type(data)
+
+
+x=np.array(data.X)
+y=np.array(data.Y)
+
+type(x)
+type(y)
+
+def plot_points(x,y,xlabel,ylabel):
+    plt.plot(x,y,'o')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+
+#Temp prediction
+plot_points(x,y,"chirps/sec","temp in farhenheit") 
+
+np.random.seed(2)
+theta=np.random.rand(2,1)
+def hypothesis(x,theta):
+    return theta[0]+theta[1]*x
+
+#draw line
+def draw_line(theta):
+    axes=plt.gca()#get current axes
+    xval=np.array(axes.get_xlim())
+    yval=hypothesis(xval,theta)
+    plt.plot(xval,yval,'--')
+
+draw_line(theta)
+
+#combining both functions
+def draw_line_and_points(x,y,xlabel,ylabel,theta):
+    plot_points(x,y,xlabel,ylabel)
+    draw_line(theta)
+    
+
+draw_line_and_points(x,y,"chirps/sec","temp in farhenheit",theta)
+
+# getting cost j(theta0,theta1)
+m=len(x)
+def cost(x,y,theta):
+    return (1/(2*m)*np.sum((hypothesis(x,theta)-y)**2))
+   
+
+cost(x,y,theta)
+
+#using gradient descent to reduce the minimization
+def gradient_descent(x,y,theta,alpha,steps):
+    for i in range(steps):
+        old_cost=cost(x,y,theta)
+        temp0=theta[0]-alpha*((1/m)*np.sum(hypothesis(x,theta)-y))
+        temp1=theta[1]-alpha*((1/m)*np.dot((hypothesis(x,theta)-y),x))
+        theta[0]=temp0
+        theta[1]=temp1
+        new_cost=cost(x,y,theta)
+        if(new_cost>old_cost):
+            print("warning!! cost increasing",new_cost)
+        else:
+            print("cost decreasing..",new_cost)
+
+#alpha values can be determined by trail and error best case is between 0.001-0.005<1
+gradient_descent(x,y,theta,alpha=0.001,steps=100)
+
+final_cost=cost(x,y,theta)
+
+final_cost
+
+theta
+
+#final graph after fixing the cost 
+draw_line_and_points(x,y,"chirps/sec","temp in farhenheit",theta)
+
+#prediction
+x=np.array([19.2])
+hypothesis(x,theta)
+
+### Using sklearn method
+
+# Import numpy,pandas,matplotlib
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+data= pd.read_csv('dataset.csv')
+data.head()
+
+#determining type
+type(data)
+
+#pandas to array
+x = np.array(data.X)
+y = np.array(data.Y)
+
+x,y
+
+def plot_points(x,y,xlabel,ylabel):
+    plt.plot(x,y,'o')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+
+#Temp prediction
+plot_points(x,y,"chirps/sec","temp in farhenheit") 
+
+#importing linear regression from sklearn
+from sklearn.linear_model import LinearRegression
+
+x = x.reshape(-1,1) 
+
+x
+
+reg = LinearRegression().fit(x, y) #fitting values
+
+#finding score
+reg.score(x, y)
+
+reg.coef_ #slope
+
+reg.intercept_#intercept
+
+#draw_line
+def draw_line(x, m, c):
+    axes = plt.gca()
+    x_vals = x
+    y_vals = m * x + c
+    plt.plot(x_vals, y_vals, '--')
+
+#draw both
+def draw_points_and_lines(x, y, xlabel, ylabel, m, c):
+    plot_points(x, y, xlabel, ylabel)
+    draw_line(x, m, c)
+
+#draw line
+draw_points_and_lines(X.flatten(), y, "chirps/sec","temperature in degrees Fahrenheit", reg.coef_,reg.intercept_)
+
+#prediction of values
+reg.predict([[20]])
+
+#### Save and load
+
+import joblib
+
+# save to pickle file/ binary file
+joblib.dump(reg, 'Regg.pkl')
+
+# load saved model
+Regg2 = joblib.load('Regg.pkl')
+
+Regg2 .predict([[20]])
+
+
+
+
+
+# Using iris dataset
+
+# Import Standard Libraries 
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+%matplotlib inline
+
+# Import ML Libaries 
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+# Import Dataset from sklearn 
+from sklearn.datasets import load_iris
+
+# Load Iris Data
+iris = load_iris()
+
+iris
+
+#data
+iris_data = pd.DataFrame(data= iris.data, columns= iris.feature_names)
+
+iris_data
+
+iris.target
+
+iris.target_names
+
+target_data = pd.DataFrame(data= iris.target, columns= ['species'])
+
+#convertor
+def converter(specie):
+    if specie == 0:
+        return 'setosa'
+    elif specie == 1:
+        return 'versicolor'
+    else:
+        return 'virginica'
+
+target_data['species'] = target_data['species'].apply(converter)
+
+target_data
+
+iris_data = pd.concat([iris_data, target_data], axis= 1)
+
+iris_data
+
+iris_data.describe()
+
+iris_data.info()
+
+## Predicting sepal length
+
+iris_data.drop('species', axis= 1, inplace= True)
+
+target_data = pd.DataFrame(columns= ['species'], data= iris.target)
+
+iris_data = pd.concat([iris_data, target_data], axis= 1)
+
+# Variables 
+X= iris_data.drop(labels= 'sepal length (cm)', axis= 1)
+y= iris_data['sepal length (cm)']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size= 0.33, random_state= 121)
+
+X_train.shape
+
+# LinearRegression() Model
+lr = LinearRegression()
+
+lr.fit(X_train, y_train)
+
+lr.predict(X_test)
+
+pred = lr.predict(X_test)
+
+# Model's Performance
+print('Mean Absolute Error:', mean_absolute_error(y_test, pred))
+print('Mean Squared Error:', mean_squared_error(y_test, pred))
+print('Mean Root Squared Error:', np.sqrt(mean_squared_error(y_test, pred)))
+
+### Test
+
+iris_data.loc[5]
+
+d = {'sepal length (cm)' : [4.6],
+    'sepal width (cm)' : [3.4],
+    'petal length (cm)' : [1.4],
+    'petal width (cm)' : [0.3],
+    'species' : 0}
+
+test_df = pd.DataFrame(data= d)
+
+test_df
+
+X_test = test_df.drop('sepal length (cm)', axis= 1)
+y_test = test_df['sepal length (cm)']
+
+lr.predict(X_test)
+
+pred = lr.predict(X_test)
+
+print('Predicted Sepal Length (cm):', pred[0])
+print('Actual Sepal Length (cm):', 4.6)
+
+### Sepal length using linear regression model
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+data=pd.read_csv('Iris.csv')
+
+data.head()
+
+type(data)
+
+X = np.array(data.SepalLengthCm)
+y = np.array(data.SepalWidthCm)
+
+X,y
+
+
+# function for plotting data points
+def plot_points(X, y, xlabel, ylabel):
+    plt.plot(X, y, 'o')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+
+plot_points(X, y, "Sepalwidth", "Sepallength")
+
+from sklearn.linear_model import LinearRegression
+
+X = X.reshape(-1,1)
+
+reg = LinearRegression().fit(X, y)
+
+reg.score(X, y)
+
+reg.coef_
+
+reg.intercept_
+
+#line 
+def draw_line(X, m, c):
+    axes = plt.gca()
+    x_vals = X
+    y_vals = m * X + c
+    plt.plot(x_vals, y_vals, '--')
+
+# line and plot
+def draw_points_and_lines(X, y, xlabel, ylabel, m, c):
+    plot_points(X, y, xlabel, ylabel)
+    draw_line(X, m, c)
+
+draw_points_and_lines(X.flatten(), y, "Sepallength", "Sepalwidth", reg.coef_, reg.intercept_)
+
+reg.predict([[6.5]])
+
+## Save model
+
+import joblib
+
+joblib.dump(reg, 'iris.pkl')
+
+iris2 = joblib.load('iris.pkl')
+
+iris2.predict([[6.5]])
+
